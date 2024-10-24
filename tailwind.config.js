@@ -2,7 +2,8 @@
 export default {
     important: true,
     darkMode: ["class"],
-    content: ["./index.html", "./src/**/*.{html,js,tsx,jsx,ts}"],
+    content: ["./index.html",
+			  "./src/**/*.{html,js,tsx,jsx,ts}"],
     safelist: [
     'translate-x-0',
     '-translate-x-full',

@@ -7,12 +7,12 @@ import Login  from './pages/Login';
 //import SlidablePage from './pages/podcast';
 import Feed from './pages/Feed';
 //import Dashboard from './components/dashboard';
-import Dashboard from './pages/tem.tsx';
+import Dashboard from './pages/Dashboard.tsx';
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route>
-            <Route path='/' element={<Home />} />
+            <Route index element={<Home />} />
             <Route path='signup'  element={<Signup />} />
             <Route path='login'  element={<Login />} />
             <Route path='dashboard'  element={<Dashboard />} />
