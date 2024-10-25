@@ -59,7 +59,7 @@ export default function Login() {
   }
   return (
     <>
-    {feedback && <Feedback variant={feedback.variant} message={feedback.message} className={"text-center bg-green-200"}/>}
+    {feedback && <Feedback variant={feedback.variant} message={feedback.message} className={clsx("text-center bg-green-200")}/>}
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <Progress value={progress} />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">

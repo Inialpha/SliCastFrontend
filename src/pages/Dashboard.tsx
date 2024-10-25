@@ -25,8 +25,8 @@ export default function Dashboard() {
 console.log(sidebarOpen);
 
   return (
-   <div className=" h-screen bg-gray-100 w-full">
-
+    <div className=" h-screen bg-gray-100 w-full">
+      <div>
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <div className="flex items-center">
@@ -59,8 +59,9 @@ console.log(sidebarOpen);
             </div>
           </div>
         </header>
-      <div className="flex h-screen w-full space-x-4">
-        <aside className={`bg-gray-800 text-white w space-y-6 py-7 w-46`}>
+      </div>
+      <div className="flex h-screen w-full relative space-x-4">
+        <aside className={`bg-gray-800 absolute text-white w-64 space-y-6 py-7 px-2  inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}  md:relative md:translate-x-0 transition duration-200 ease-in-out`}>
         <nav>
           <Button variant="ghost" className="flex items-center space-x-2 w-full justify-start" asChild>
             <a href="#" className="text-white hover:bg-gray-700 hover:text-white rounded-md px-3 py-2">
