@@ -10,9 +10,9 @@ import { Progress } from "@/components/ui/progress"
 import { Feedback } from '../components/Alert';
 import { postRequest } from '../utils/postRequest'
 import {FeedbackType } from '../utils/types'
-
 import { clsx, ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { getCookie, setCookie } from '../utils/cookieManager';
 
 function cn(...args: ClassValue[]) {
   return twMerge(clsx(args));
@@ -27,41 +27,56 @@ export default function Login() {
     formState: { errors }} = useForm();
 
   const onSubmit = async (data: object) => {
-    const progressInterval = setInterval(() => setProgress(progress + 1), 100);
+    const progressInterval = setInterval(() => {
+      setProgress((prevProgress) => {
+        if (prevProgress >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return prevProgress + 1;
+      });
+    }, 100);
+
     console.log(data);
     const url = `${import.meta.env.VITE_AUTH_URL}/login/`
 
     const response = await postRequest(url, data);
     try {
-      const res = await response.json();
-      console.log(res);
+      console.log(response);
       if (response.ok) {
+        const res = await response.json();
         setFeedback({message: "Login successful. Redirecting to dashboard",
         });
-        const timer = setTimeout(() => navigate("/dashboard"), 500);
+        console.log(res)
+        setCookie("token", res.token);
+        console.log(getCookie("token"));
+        setTimeout(() => {
+          navigate("/dashboard")
+        }, 500);
         clearInterval(progressInterval);
         setProgress(0);
-        clearTimeout(timer);
       } else {
         clearInterval(progressInterval);
         setProgress(0);
+        const res = await response.json();
         if (res.detail === "User account not verified.") {
           console.log(response);
-          setFeedback({variant: 'destructive', message: "Please verify your email and try again"});
+          setFeedback({variant: 'warning', message: "Please verify your email and try again"});
         } else if (res.detail === "Unable to login with provided credentials."){
           console.log(response);
-          setFeedback({variant: 'destructive', message: "Incorrect email or password"});
+          setFeedback({variant: 'error', message: "Incorrect email or password"});
         }
       }
     } catch (error) {
+        clearInterval(progressInterval);
+        setFeedback({variant: 'error', message: "An error occured please try again"});
         console.log(error);
     }
   }
   return (
     <>
-    {feedback && <Feedback variant={feedback.variant} message={feedback.message} className={clsx("text-center bg-green-200")}/>}
+    {feedback && <Feedback variant={feedback.variant} message={feedback.message} className={"text-center bg-green-200"}/>}
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <Progress value={progress} />
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Login</h2>
       </div>

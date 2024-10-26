@@ -12,15 +12,15 @@ import { FormType, NewData } from '../utils/types'
 
 export default function Signup() {
   //const [loading, setLoading] = useState(false)
-const [feedback, setFeedback] = useState('');
+  const [feedback, setFeedback] = useState('');
   const navigate = useNavigate();
   const {
     register,
     watch,
     handleSubmit,
     formState: { errors } } = useForm<FormType>();
-    //const email = watch('email');
-    const password = watch('password');
+  //const email = watch('email');
+  const password = watch('password');
 
   const onSubmit: SubmitHandler<FormType> = async (data) => {
     const newData: NewData = {
@@ -33,6 +33,7 @@ const [feedback, setFeedback] = useState('');
 
     const url = `${import.meta.env.VITE_AUTH_URL}/signup`
     const response = await postRequest(url, newData);
+    console.log(response)
     if (response.ok) {
       setFeedback('Signup successful login to continue');
       setTimeout(() => {
