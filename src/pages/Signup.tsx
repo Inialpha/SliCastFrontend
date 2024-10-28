@@ -1,4 +1,4 @@
-import { postRequest } from '../utils/postRequest'
+import { postRequest } from '../utils/apis'
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';

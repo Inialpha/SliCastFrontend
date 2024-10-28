@@ -8,19 +8,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { Feedback } from '../components/Alert';
-import { postRequest } from '../utils/postRequest'
+import { postRequest, getUser } from '../utils/apis'
 import {FeedbackType } from '../utils/types'
 import { clsx, ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { getCookie, setCookie } from '../utils/cookieManager';
+import { useSelector, useDispatch } from 'react-redux';
+import { login } from '../store/userSlice';
 
-function cn(...args: ClassValue[]) {
-  return twMerge(clsx(args));
-}
 export default function Login() {
   const navigate = useNavigate();
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
   const [progress, setProgress] = useState(0)
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -40,8 +40,8 @@ export default function Login() {
     console.log(data);
     const url = `${import.meta.env.VITE_AUTH_URL}/login/`
 
-    const response = await postRequest(url, data);
     try {
+      const response = await postRequest(url, data);
       console.log(response);
       if (response.ok) {
         const res = await response.json();
@@ -50,6 +50,18 @@ export default function Login() {
         console.log(res)
         setCookie("token", res.token);
         console.log(getCookie("token"));
+        const userRes = await getUser();
+        if (userRes.ok) {
+          const user = await userRes.json();
+          console.log(user)
+          const userData = {
+            'id': user.id,
+            'firstName': user.first_name,
+            'lastName': user.last_name,
+            'isStaff': user.is_staff,
+          }
+          dispatch(login(userData));
+        }
         setTimeout(() => {
           navigate("/dashboard")
         }, 500);

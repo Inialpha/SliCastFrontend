@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import '../App.css'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useSelector } from 'react-redux';
 import { 
   Bell, 
   Search, 
@@ -20,9 +21,10 @@ import {
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
+  const user = useSelector((state) => state.user);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
-console.log(sidebarOpen);
+  console.log(user);
+
 
   return (
     <div className=" h-screen bg-gray-100 w-full">
