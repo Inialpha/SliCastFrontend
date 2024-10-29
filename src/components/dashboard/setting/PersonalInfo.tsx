@@ -20,7 +20,7 @@ export default function PersonalInfo() {
   }
 
   return (
-  <Card>
+  <Card className>
     <CardHeader>
       <CardTitle>Personal Information</CardTitle>
       <CardDescription>Update your personal details here.</CardDescription>

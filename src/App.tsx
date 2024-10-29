@@ -6,7 +6,7 @@ import Login  from './pages/Login';
 //import SlidablePage from './pages/podcast';
 import Feed from './pages/Feed';
 import Dashboard from './pages/Dashboard.tsx';
-import Settings from './components/dashboard/setting/settings';
+
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route>
@@ -14,7 +14,7 @@ const routes = createBrowserRouter(
             <Route path='signup'  element={<Signup />} />
             <Route path='login'  element={<Login />} />
             <Route path='dashboard'  element={<Dashboard />} />
-            <Route path='feeds' element={<Settings />} />
+            <Route path='feeds' element={<Feed />} />
         </Route>
     )
 )

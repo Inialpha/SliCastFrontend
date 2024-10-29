@@ -15,12 +15,15 @@ import { Bell,
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
+import SettingsComponent from '../components/dashboard/setting/settings';
 // Placeholder components for dashboard features
 const DashboardHome = () => <div className="p-4">Dashboard Home Content</div>
-const SettingsComponent = () => <div className="p-4">Settings Content</div>
+
+
 const AnalyticsComponent = () => <div className="p-4">Analytics Content</div>
+
 const UsersComponent = () => <div className="p-4">Users Management Content</div>
+
 const ContentComponent = () => <div className="p-4">Content Management</div>
 
 export default function Dashboard({ userRole = "user" }: { userRole?: "user" | "admin" }) {

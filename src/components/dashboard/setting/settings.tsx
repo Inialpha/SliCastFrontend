@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,7 +12,7 @@ import Preferences from './Preferences';
 import Privacy from './Privacy';
 
 
-export default function Settings() {
+export default function SettingsComponent() {
   const [personalInfo, setPersonalInfo] = useState({
     name: 'John Doe',
     email: 'john@example.com',
@@ -55,7 +55,8 @@ export default function Settings() {
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Settings</h1>
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-200">
+        <TabsList className="grid w-full grid-cols-4 
+">
           <TabsTrigger value="personal">Personal Info</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
           <TabsTrigger value="privacy">Privacy</TabsTrigger>
