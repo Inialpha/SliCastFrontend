@@ -4,7 +4,7 @@ export const postRequest = async (url: string, data: object) => {
     const cookie = getCookie('token')
     const headers = new Headers({
         'Content-Type': 'application/json',
-	'Authorization': cookie || '',
+	'Authorization': `Token ${cookie || ''}`,
     });
     const response = await fetch(url, {
 	body: JSON.stringify(data),
@@ -17,7 +17,7 @@ export const postRequest = async (url: string, data: object) => {
 export const getRequest = async (url: string) => {
     const cookie = getCookie('token');
     const headers = new Headers({
-        'Authorization': cookie || '',
+        'Authorization': `Token ${cookie || ''}`,
     });
     const response = await fetch(url, {
         method: 'GET',

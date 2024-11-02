@@ -16,6 +16,8 @@ import { Bell,
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import SettingsComponent from '../components/dashboard/setting/settings';
+import { useSelector } from 'react-redux';
+
 // Placeholder components for dashboard features
 const DashboardHome = () => <div className="p-4">Dashboard Home Content</div>
 
@@ -29,6 +31,7 @@ const ContentComponent = () => <div className="p-4">Content Management</div>
 export default function Dashboard({ userRole = "user" }: { userRole?: "user" | "admin" }) {
   const [activeItem, setActiveItem] = useState("dashboard")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const user = useSelector((state) => state.user);                                        console.log(user)
   
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
 

@@ -1,0 +1,40 @@
+{
+    "title": "Sample Podcast",
+    "description": "A test podcast to demonstrate creation.",
+    "authors": ["6d1e597c-5678-461c-abce-5e2b591f7fe3"],
+    "genres": ["0961e06d-cc25-48d5-9262-3f5257730088"],
+    "duration": 30,
+    "status": "draft",
+    "slides": [
+        {
+            "text": "Introduction to the Podcast",
+            "background_image": "http://example.com/background1.jpg",
+            "background_color": "#FFFFFF",
+            "text_color": "#000000",
+            "text_size": 24,
+            "text_font": "Arial",
+            "audio": "http://example.com/audio1.mp3",
+            "position": 1
+        },
+        {
+            "text": "Episode Overview",
+            "background_image": "http://example.com/background2.jpg",
+            "background_color": "#F0F0F0",
+            "text_color": "#333333",
+            "text_size": 20,
+            "text_font": "Helvetica",
+            "audio": "http://example.com/audio2.mp3",
+            "position": 2
+        },
+        {
+            "text": "Key Takeaways",
+            "background_image": "http://example.com/background3.jpg",
+            "background_color": "#FFFFFF",
+            "text_color": "#FF0000",
+            "text_size": 22,
+            "text_font": "Times New Roman",
+            "audio": "http://example.com/audio3.mp3",
+            "position": 3
+        }
+    ]
+}

@@ -6,6 +6,9 @@ import Login  from './pages/Login';
 //import SlidablePage from './pages/podcast';
 import Feed from './pages/Feed';
 import Dashboard from './pages/Dashboard.tsx';
+import PodcastCreator from './pages/CreatePodcast';
+import EnhancedStorySlideCreator from './pages/PodcastCreator';
+import MyEditor from './components/Editor';
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -15,6 +18,8 @@ const routes = createBrowserRouter(
             <Route path='login'  element={<Login />} />
             <Route path='dashboard'  element={<Dashboard />} />
             <Route path='feeds' element={<Feed />} />
+            <Route path='new' element={<EnhancedStorySlideCreator />} />
+            <Route path='editor' element={<MyEditor />} />
         </Route>
     )
 )
