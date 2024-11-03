@@ -13,17 +13,18 @@ import Feedback from '../components/feedback';
 import {FeedbackType } from '../utils/types'
 import GenreSelector, { Genre } from '../components/podcast/Genre';
 import MyEditor from "../components/Editor"
-import { postRequest } from '../utils/apis';
+import { postRequest, postFormData } from '../utils/apis';
 import { useSelector } from 'react-redux';
 
 
 interface Slide {
   position: number;
   text: string;
-  backgroundImage: string;
+  backgroundImage: File | null;
   backgroundColor: string;
   textColor: string;
   audioFile: string | null;
+  audio: File | null
 }
 
 interface Genre {
@@ -72,12 +73,21 @@ export default function EnhancedStorySlideCreator() {
       text: story,
       duration: sentencesPerSlide,
       description: description,
-      genres: selectedGenres.map(g => g.id),
-      slides: slides
+      genres: selectedGenres.map((g: Genre) => g.id),
+      slides: slides.map((s: Slide) => ({
+        ...s,
+        background_image: s.image_file,
+        audio: s.audio_file,
+        background_color: s.backgroundColor
+      }))
     }
+      const formData = new FormData()
+      Object.entries(formData).forEach(([key, value]) => { 
+        formData.append(key, value)
+      })
     console.log(podcast);
     const url = `${import.meta.env.VITE_API_URL}/podcasts/`;
-    const res = await postRequest(url, podcast)
+    const res = await postFormData(url, formData)
     console.log(res)
     if (res.ok) {
       const response = await res.json()
@@ -103,6 +113,7 @@ export default function EnhancedStorySlideCreator() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && editingSlide) {
+      editingSlide.image_file = file
       const reader = new FileReader()
       reader.onloadend = () => {
         updateSlide({ ...editingSlide, backgroundImage: reader.result as string })
@@ -114,6 +125,7 @@ export default function EnhancedStorySlideCreator() {
   const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && editingSlide) {
+      editingSlide.audio_file = file
       const reader = new FileReader()
       reader.onloadend = () => {
         updateSlide({ ...editingSlide, audioFile: reader.result as string })

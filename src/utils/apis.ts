@@ -14,6 +14,19 @@ export const postRequest = async (url: string, data: object) => {
     return response;
 }
 
+export const postFormData = async (url: string, formData: object) => {
+    const cookie = getCookie('token')
+    const headers = new Headers({
+        'Authorization': `Token ${cookie || ''}`,
+    });
+    const response = await fetch(url, {
+        body: FormData,
+	method: 'POST',
+	headers
+    });
+    return response;
+}
+
 export const getRequest = async (url: string) => {
     const cookie = getCookie('token');
     const headers = new Headers({
