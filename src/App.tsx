@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard.tsx';
 import PodcastCreator from './pages/CreatePodcast';
 import EnhancedStorySlideCreator from './pages/PodcastCreator';
 import MyEditor from './components/Editor';
+import PodcastViewPage from './pages/PodcastViewPage';
+
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
@@ -20,6 +22,7 @@ const routes = createBrowserRouter(
             <Route path='feeds' element={<Feed />} />
             <Route path='new' element={<EnhancedStorySlideCreator />} />
             <Route path='editor' element={<MyEditor />} />
+            <Route path='podcast' element={<PodcastViewPage />} />
         </Route>
     )
 )

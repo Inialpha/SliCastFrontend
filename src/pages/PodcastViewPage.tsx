@@ -5,22 +5,35 @@ import Ini from '../assets/inimfon_ebong.jpg'
 import { useState, useEffect } from 'react';
 import Slide from './Slide';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+
 
 interface SlideData {
   text: string;
   imageUrl: string;
 }
 
-const slides: SlideData[] = [
+/*const slides: SlideData[] = [
     { text: "Welcome to our presentation", imageUrl: landscapeImage },
 
     { text: "Discover amazing features", imageUrl: Ini },
     { text: "Join us on this journey", imageUrl: landscapeImage },
-] 
+]*/
 
-export default function SlidePage() {
+export default function PodcastViewPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [slides, setSlides] = useState(null);
+  const location = useLocation();
 
+    const { podcast } = location.state || {};
+    useEffect(() => {
+      if (podcast) {
+        setSlides(podcast.slides);
+      }
+    }, []);
+    console.log(podcast)
+    console.log(podcast.slides)
+  
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
@@ -32,7 +45,7 @@ export default function SlidePage() {
   useEffect(() => {
     const timer = setInterval(nextSlide, 5000); // Auto-advance every 5 seconds
     return () => clearInterval(timer);
-  }, []);
+  }, [slides]);
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-gradient-to-r from-blue-500 to-purple-500">
@@ -40,7 +53,7 @@ export default function SlidePage() {
         className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {slides.map((slide, index) => (
+        {slides && slides.map((slide, index) => (
           <div key={index} className="flex-shrink-0 w-full h-full">
             <Slide text={slide.text} backgroundImage={slide.imageUrl} />
           </div>
@@ -61,7 +74,7 @@ export default function SlidePage() {
         <ChevronRight className="w-6 h-6 text-gray-800" />
       </button>
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {slides.map((_, index) => (
+        {slides && slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}

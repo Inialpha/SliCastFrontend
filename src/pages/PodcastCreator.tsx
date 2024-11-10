@@ -81,25 +81,47 @@ export default function EnhancedStorySlideCreator() {
         background_color: s.backgroundColor
       }))
     }
-      const formData = new FormData()
-      Object.entries(formData).forEach(([key, value]) => { 
-        formData.append(key, value)
-      })
-    console.log(podcast);
-    const url = `${import.meta.env.VITE_API_URL}/podcasts/`;
-    const res = await postFormData(url, formData)
-    console.log(res)
-    if (res.ok) {
-      const response = await res.json()
-      console.log(response)
-      setFeedback({message: "Podcast was successfully created"});
-    } else {
-      const response = await res.json()
-      console.log(response)
-      setFeedback({message: "There was an error creating podcast"});
+
+    const formData = new FormData()
+    Object.entries(podcast).forEach(([key, value]) => { 
+      if (key !== "slides") {
+        if (Array.isArray(value)) {
+          value.forEach((item: any) => {
+            formData.append(key, item)
+          });
+        } else {
+          formData.append(key, value)
+        }
+      }
+    });
+    slides.forEach((item: any, idx: number) => {
+      Object.entries(item).forEach(([key, value]) => {
+        formData.append(`slides[${idx}]${key}`, value);
+      });
+    });
+
+    for (const data of formData.entries()) {
+      console.log("form: ", data[0], data[1]);
     }
-   
+    
+    const url = `${import.meta.env.VITE_API_URL}/podcasts/`;
+    try {
+      const res = await postFormData(url, formData)
+      const response = await res.json()
+      console.log(res)
+      if (res.ok) {
+        console.log(response)
+        setFeedback({message: "Podcast was successfully created"});
+      } else {
+        console.log(response)
+        setFeedback({message: "There was an error creating podcast"});
+      }
+      setTimeout(() => setFeedback(""), 5000);
+    } catch (error) {
+      console.log(error);
+    }
   }
+
   const handleSlideClick = (slide: Slide) => {
     setEditingSlide(slide)
   }

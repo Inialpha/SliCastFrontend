@@ -20,7 +20,7 @@ export const postFormData = async (url: string, formData: object) => {
         'Authorization': `Token ${cookie || ''}`,
     });
     const response = await fetch(url, {
-        body: FormData,
+        body: formData,
 	method: 'POST',
 	headers
     });
@@ -48,6 +48,19 @@ export const getUser = async () => {
     const response = await fetch(url, {
         method: 'GET',
         headers
+    });
+    return response;
+}
+
+export const getAuthors = async (podcastId: string[]) => {
+    const url = `${import.meta.env.VITE_API_URL}/authours/${podcastId}`;
+    const cookie = getCookie('token')
+    const headers = new Headers({
+        'Authorization': `Token ${cookie || ''}`,
+    });
+    const response = await fetch(url, {
+	method: 'GET',
+	headers
     });
     return response;
 }

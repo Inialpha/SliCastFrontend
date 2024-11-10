@@ -1,10 +1,56 @@
-//import React from 'react'
+import { useState, useEffect } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Home, Bell, MessageSquare, Settings, User, Search } from 'lucide-react'
 import { Link } from 'react-router-dom';
+import { getRequest } from '../utils/apis';
+import PodcastCard from '../components/podcast/PodcastCard';
+import _ from 'lodash';
+
 
 export default function Feed() {
+  const [podcasts, setPodcasts] = useState(null);
+ 
+  const toCamelCaseKeys = (obj) => {
+  if (Array.isArray(obj)) {
+    return obj.map(toCamelCaseKeys);
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce((result, key) => {
+      const camelKey = _.camelCase(key);
+      result[camelKey] = toCamelCaseKeys(obj[key]);
+      return result;
+    }, {});
+  }
+  return obj;
+};
+
+  useEffect(() => {
+    const fetchPodcast = async () => {
+      const url = `${import.meta.env.VITE_API_URL}/podcasts/`
+      try {
+        const res = await getRequest(url);
+        if (res.ok) {
+          const fetchedPodcast = await res.json()
+          const camelCasePodcasts = fetchedPodcast.map((podcast) => toCamelCaseKeys(podcast));
+          setPodcasts(camelCasePodcasts)
+          console.log("fetchedPodcast: ", fetchedPodcast)
+          console.log("camel: ", camelCasePodcasts)
+          console.log(podcasts)
+        } else {
+          console.log("unable to load podcast")
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchPodcast()
+  },[]);
+
+  useEffect(() => {
+  // This will run every time `podcasts` updates
+  console.log("Updated podcasts:", podcasts);
+}, [podcasts]);
+  
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Fixed Navbar */}
@@ -61,12 +107,12 @@ export default function Feed() {
 
       {/* Main Content */}
       <main className="pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Your Feed</h1>
-          {/* Add your feed content here */}
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <p className="text-gray-600">Your feed content goes here. Add posts, articles, or any other content you want to display in the feed.</p>
-          </div>
+        <div className="py-8 space-y-8">
+          
+          {podcasts && podcasts.map((podcast, idx) => (
+            <PodcastCard podcast={podcast} />
+          ))};
+          
         </div>
       </main>
     </div>
