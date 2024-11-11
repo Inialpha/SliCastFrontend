@@ -15,6 +15,7 @@ import GenreSelector, { Genre } from '../components/podcast/Genre';
 import MyEditor from "../components/Editor"
 import { postRequest, postFormData } from '../utils/apis';
 import { useSelector } from 'react-redux';
+import DOMPurify from 'dompurify';
 
 
 interface Slide {
@@ -128,6 +129,7 @@ export default function EnhancedStorySlideCreator() {
 
   const handleSlideContentChange = (content: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (editingSlide) {
+      content = DOMPurify.sanitize(content)
       updateSlide({ ...editingSlide, text: content })
     }
   }

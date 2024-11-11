@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd'
+import parse from 'html-react-parser';
+
 
 interface Slide {
   position: number;

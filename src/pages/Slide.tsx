@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
+import parse from 'html-react-parser';
+
 
 interface SlideProps {
   backgroundImage: string;
   text: string;
 }
 
-export default function Slide({ backgroundImage, text }: SlideProps = {
-  backgroundImage: '/placeholder.svg?height=1080&width=1920',
-  text: 'Your Text Here'
+export default function Slide({ backgroundImage, text, slide }: SlideProps = {
 }) {
   const [offset, setOffset] = useState(0);
 
@@ -26,7 +26,7 @@ export default function Slide({ backgroundImage, text }: SlideProps = {
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-300 ease-out"
         style={{
-          backgroundImage: `url(${backgroundImage})`,
+          backgroundImage: `url(${slide.backgroundImage})`,
           transform: `translateX(${offset}px)`,
           opacity: 0.5, // Lowered opacity for the background image
         }}
@@ -36,7 +36,7 @@ export default function Slide({ backgroundImage, text }: SlideProps = {
         style={{ transform: `translateX(${offset}px)` }}
       >
         <h1 className="text-4xl font-bold text-white text-center px-4">
-          {text}
+          {parse(slide.text)}
         </h1>
       </div>
       </div>

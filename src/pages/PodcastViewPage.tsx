@@ -7,7 +7,6 @@ import Slide from './Slide';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
-
 interface SlideData {
   text: string;
   imageUrl: string;
@@ -55,7 +54,7 @@ export default function PodcastViewPage() {
       >
         {slides && slides.map((slide, index) => (
           <div key={index} className="flex-shrink-0 w-full h-full">
-            <Slide text={slide.text} backgroundImage={slide.imageUrl} />
+            <Slide text={slide.text} backgroundImage={slide.imageUrl} slide={slide} />
           </div>
         ))}
       </div>

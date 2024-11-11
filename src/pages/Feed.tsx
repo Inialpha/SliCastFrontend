@@ -32,10 +32,8 @@ export default function Feed() {
         if (res.ok) {
           const fetchedPodcast = await res.json()
           const camelCasePodcasts = fetchedPodcast.map((podcast) => toCamelCaseKeys(podcast));
+          camelCasePodcasts.sort((a, b) => a.position - b.position))
           setPodcasts(camelCasePodcasts)
-          console.log("fetchedPodcast: ", fetchedPodcast)
-          console.log("camel: ", camelCasePodcasts)
-          console.log(podcasts)
         } else {
           console.log("unable to load podcast")
         }
