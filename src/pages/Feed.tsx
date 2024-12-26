@@ -5,34 +5,24 @@ import { Home, Bell, MessageSquare, Settings, User, Search } from 'lucide-react'
 import { Link } from 'react-router-dom';
 import { getRequest } from '../utils/apis';
 import PodcastCard from '../components/podcast/PodcastCard';
-import _ from 'lodash';
-
+import toCamelCaseKeys from '../utils/toCamelCase';
+import { useNavigate } from 'react-router-dom';
 
 export default function Feed() {
   const [podcasts, setPodcasts] = useState(null);
+  const navigate = useNavigate()
  
-  const toCamelCaseKeys = (obj) => {
-  if (Array.isArray(obj)) {
-    return obj.map(toCamelCaseKeys);
-  } else if (obj !== null && obj.constructor === Object) {
-    return Object.keys(obj).reduce((result, key) => {
-      const camelKey = _.camelCase(key);
-      result[camelKey] = toCamelCaseKeys(obj[key]);
-      return result;
-    }, {});
-  }
-  return obj;
-};
 
   useEffect(() => {
     const fetchPodcast = async () => {
       const url = `${import.meta.env.VITE_API_URL}/podcasts/`
+
       try {
         const res = await getRequest(url);
         if (res.ok) {
           const fetchedPodcast = await res.json()
           const camelCasePodcasts = fetchedPodcast.map((podcast) => toCamelCaseKeys(podcast));
-          camelCasePodcasts.sort((a, b) => a.position - b.position))
+          console.log(camelCasePodcasts)
           setPodcasts(camelCasePodcasts)
         } else {
           console.log("unable to load podcast")
@@ -43,11 +33,10 @@ export default function Feed() {
     }
     fetchPodcast()
   },[]);
-
-  useEffect(() => {
-  // This will run every time `podcasts` updates
-  console.log("Updated podcasts:", podcasts);
-}, [podcasts]);
+  const navigateTo = (component = "") => {
+    navigate('/dashboard', { state: {'component': component}
+    });
+  };
   
   return (
     <div className="min-h-screen bg-gray-100">
@@ -78,11 +67,15 @@ export default function Feed() {
 
             {/* Navigation Icons */}
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon"
+                onClick={() => navigate('/feeds')}
+              >
                 <Home className="h-5 w-5" />
                 <span className="sr-only">Home</span>
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon"
+                onClick={() => navigateTo('notification')}
+              >
                 <Bell className="h-5 w-5" />
                 <span className="sr-only">Notifications</span>
               </Button>
@@ -90,7 +83,9 @@ export default function Feed() {
                 <MessageSquare className="h-5 w-5" />
                 <span className="sr-only">Messages</span>
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon"
+                onClick={() => navigateTo('settings')}
+              >
                 <Settings className="h-5 w-5" />
                 <span className="sr-only">Settings</span>
               </Button>
@@ -109,7 +104,7 @@ export default function Feed() {
           
           {podcasts && podcasts.map((podcast, idx) => (
             <PodcastCard podcast={podcast} />
-          ))};
+          ))}
           
         </div>
       </main>

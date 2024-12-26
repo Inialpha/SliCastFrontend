@@ -73,8 +73,8 @@ export default function DragDropSlide({ slides, editingSlide, setEditingSlide }:
                           style={{ backgroundColor: slide.backgroundColor }}
                         />
                       )}
-                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
-                        <p className="text-sm line-clamp-2" style={{ color: slide.textColor }}>{slide.text}</p>
+                      <div className="absolute bg-opacity-50 p-6">
+                        <p className="text-sm">{parse(slide.text)}</p>
                       </div>
                       {slide.audioFile && (
                         <div className="absolute top-2 right-2">

@@ -11,7 +11,7 @@ interface SlideProps {
 export default function Slide({ backgroundImage, text, slide }: SlideProps = {
 }) {
   const [offset, setOffset] = useState(0);
-
+  console.log(slide)
   const handlers = useSwipeable({
     onSwiping: (eventData) => {
       setOffset(eventData.deltaX);
@@ -23,23 +23,32 @@ export default function Slide({ backgroundImage, text, slide }: SlideProps = {
 
   return (
     <div className="relative w-full h-screen overflow-hidden" {...handlers}>
+      {slide.backgroundImage ? ( 
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-300 ease-out"
+          style={{
+            backgroundImage: `url(${slide.backgroundImage})`,
+            transform: `translateX(${offset}px)`,
+            opacity: 0.5,
+          }}
+        />
+      ) : (
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-300 ease-out"
         style={{
-          backgroundImage: `url(${slide.backgroundImage})`,
+          backgroundColor: slide.backgroundColor,
           transform: `translateX(${offset}px)`,
-          opacity: 0.5, // Lowered opacity for the background image
+          opacity: 0.5,
         }}
-      >
-      <div
-        className="relative z-10 flex items-center justify-center h-full transition-transform duration-300 ease-out"
-        style={{ transform: `translateX(${offset}px)` }}
-      >
-        <h1 className="text-4xl font-bold text-white text-center px-4">
-          {parse(slide.text)}
-        </h1>
-      </div>
-      </div>
+      />)}
+        <div
+          className="relative z-10 flex items-center justify-center h-full transition-transform duration-300 ease-out"
+          style={{ transform: `translateX(${offset}px)` }}
+        >
+          <h1 className="text-center px-4">
+            {parse(slide.text)}
+          </h1>
+        </div>
     </div>
-  );
+  )
 }

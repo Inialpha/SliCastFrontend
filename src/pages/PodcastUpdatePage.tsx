@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,12 +13,14 @@ import Feedback from '../components/feedback';
 import {FeedbackType } from '../utils/types'
 import GenreSelector, { Genre } from '../components/podcast/Genre';
 import MyEditor from "../components/Editor"
-import { postRequest, postFormData } from '../utils/apis';
+import { postRequest, postFormData, putFormData } from '../utils/apis';
 import { useSelector } from 'react-redux';
 import DOMPurify from 'dompurify';
+import { useLocation } from 'react-router-dom';
 
 
 interface Slide {
+  id: string | null
   position: number;
   text: string;
   backgroundImage: string | null;
@@ -34,7 +36,7 @@ interface Genre {
   name: string;
 }
 
-export default function EnhancedStorySlideCreator() {
+export default function PodcastEditPage() {
   const [title, setTitle] = useState('');
   const [story, setStory] = useState('');
   const [description, setDescription] = useState('');
@@ -44,12 +46,25 @@ export default function EnhancedStorySlideCreator() {
   const [previewSlide, setPreviewSlide] = useState<Slide | null>(null)
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
+  
+  const location = useLocation(); 
 
   const user = useSelector((state) => state.user);
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const audioInputRef = useRef<HTMLInputElement>(null)
   const audioRef = useRef<HTMLAudioElement>(null)
+
+  const { podcast } = location.state || {};
+  useEffect(() => {
+    if (podcast) {
+      console.log("podcast slides", podcast.slides)
+      podcast.slides.sort((a, b) => a.position - b.position);
+      setDescription(podcast.description)
+      setSelectedGenres(podcast.genresDetails)
+      setSlides(podcast.slides);
+    }
+  }, [podcast]);
 
   const createSlides = () => {
     const sentences = story.match(/[^.!?]+[.!?]+/g) || []
@@ -61,26 +76,24 @@ export default function EnhancedStorySlideCreator() {
         backgroundImage: '',
         backgroundColor: '#ffffff',
         textColor: '#000000',
-        audioFile: null
+        audioFile: ''
       })
     }
     setSlides(newSlides)
   }
-  const createPodcast = async (type: string, slides: Slide[]) => {
-    const podcast = {
+  const updatePodcast = async (slides: Slide[]) => {
+    const updatedPodcast = {
 
       authors: [user.id],
-      status: type,
-      title: title,
       text: story,
-      duration: sentencesPerSlide,
+      duration: sentencesPerSlide * slides.length,
       description: description,
       genres: selectedGenres.map((g: Genre) => g.id),
       slides: slides,
     }
-	console.log(podcast)
+	console.log(updatedPodcast)
     const formData = new FormData()
-    Object.entries(podcast).forEach(([key, value]) => { 
+    Object.entries(updatedPodcast).forEach(([key, value]) => { 
       if (key !== "slides") {
         if (Array.isArray(value)) {
           value.forEach((item: any) => {
@@ -92,13 +105,16 @@ export default function EnhancedStorySlideCreator() {
       }
     });
     slides.forEach((item: any, idx: number) => {
+      console.log(item)
       Object.entries(item).forEach(([key, value]) => {
-        if (key === "backgroundImageFile") {
-          formData.append(`slides[${idx}]background_image_file`, value);
-        } else if (key === "backgroundColor") {
-          formData.append(`slides[${idx}]background_color`, value);
-        } else {
-        formData.append(`slides[${idx}]${key}`, value);
+        if (value !== "" && value !== null) {
+          if (key === "backgroundImageFile") {
+            formData.append(`slides[${idx}]background_image_file`, value);
+          } else if (key === "backgroundColor") {
+            formData.append(`slides[${idx}]background_color`, value);
+          } else {
+          formData.append(`slides[${idx}]${key}`, value);
+          }
         }
       });
     });
@@ -107,17 +123,17 @@ export default function EnhancedStorySlideCreator() {
       console.log("form: ", data[0], data[1]);
     }
     
-    const url = `${import.meta.env.VITE_API_URL}/podcasts/`;
+    const url = `${import.meta.env.VITE_API_URL}/podcasts/${podcast.id}/`;
     try {
-      const res = await postFormData(url, formData)
+      const res = await putFormData(url, formData)
       const response = await res.json()
       console.log(res)
       if (res.ok) {
         console.log(response)
-        setFeedback({message: "Podcast was successfully created"});
+        setFeedback({message: "Podcast was successfully updated"});
       } else {
         console.log(response)
-        setFeedback({message: "There was an error creating podcast"});
+        setFeedback({message: "There was an error updating podcast"});
       }
       setTimeout(() => setFeedback(""), 5000);
     } catch (error) {
@@ -202,8 +218,7 @@ export default function EnhancedStorySlideCreator() {
       <div className="flex justify-between end">
         <h1 className="text-3xl font-bold mb-6">Enhanced Story Slide Creator</h1>
         <div className="flex space-x-2">
-          <Button onClick={() => slides.length ? createPodcast("draft", slides) : setFeedback({message: "Please add slides" }) }>Save as Draft</Button>
-          <Button onClick={() => slides.length ? createPodcast("published", slides) : setFeedback({message: "Please add slides" })}>Publish</Button>
+          <Button onClick={() => slides.length ? updatePodcast(slides) : setFeedback({message: "Please add slides" }) }>Save</Button>
         </div>
       </div>
       <div className="mb-6">

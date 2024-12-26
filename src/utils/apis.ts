@@ -27,6 +27,18 @@ export const postFormData = async (url: string, formData: object) => {
     return response;
 }
 
+export const putFormData = async (url: string, formData: object) => {
+    const cookie = getCookie('token')
+    const headers = new Headers({
+	'Authorization': `Token ${cookie || ''}`,
+    });
+    const response = await fetch(url, {
+	body: formData,
+	method: 'PATCH',
+	headers,
+    });
+    return response;
+}
 export const getRequest = async (url: string) => {
     const cookie = getCookie('token');
     const headers = new Headers({

@@ -1,6 +1,4 @@
 //import { useSwipeable } from 'react-swipeable';
-import landscapeImage from '../assets/podcast_images/landscape_1.jpeg';
-import Ini from '../assets/inimfon_ebong.jpg'
 //import React
 import { useState, useEffect } from 'react';
 import Slide from './Slide';
@@ -12,26 +10,19 @@ interface SlideData {
   imageUrl: string;
 }
 
-/*const slides: SlideData[] = [
-    { text: "Welcome to our presentation", imageUrl: landscapeImage },
-
-    { text: "Discover amazing features", imageUrl: Ini },
-    { text: "Join us on this journey", imageUrl: landscapeImage },
-]*/
 
 export default function PodcastViewPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slides, setSlides] = useState(null);
-  const location = useLocation();
+  const loc = useLocation();
 
-    const { podcast } = location.state || {};
+    const { podcast } = loc.state || {};
     useEffect(() => {
       if (podcast) {
+        podcast.slides.sort((a, b) => a.position - b.position);
         setSlides(podcast.slides);
       }
     }, []);
-    console.log(podcast)
-    console.log(podcast.slides)
   
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -41,13 +32,24 @@ export default function PodcastViewPage() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  const calculateReadingTime = (text) => {
+    const wordsPerMinute = 160;
+    const words = text.trim().split(/\s+/).length;
+    const minutes = words / wordsPerMinute;
+    const milliseconds = minutes * 60 * 1000;
+    //console.log(slides[currentSlide].text, milliseconds)
+    return Math.round(milliseconds)
+}
+
   useEffect(() => {
-    const timer = setInterval(nextSlide, 5000); // Auto-advance every 5 seconds
-    return () => clearInterval(timer);
-  }, [slides]);
+    if (slides) {
+      const timer = setInterval(nextSlide, calculateReadingTime(slides[currentSlide].text));
+      return () => clearInterval(timer);
+    }
+  }, [slides, currentSlide]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-gradient-to-r from-blue-500 to-purple-500">
+    <div className="relative w-full h-screen overflow-hidden">
       <div
         className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
