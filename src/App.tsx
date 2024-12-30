@@ -11,8 +11,7 @@ import EnhancedStorySlideCreator from './pages/PodcastCreator';
 import Profile from './components/dashboard/Profile';
 import PodcastViewPage from './pages/PodcastViewPage';
 import PodcastEditPage from './pages/PodcastUpdatePage';
-import PodcatDisplay from '@/pages/PodcastDisplay'
-
+import PodcastDisplay from '@/pages/PodcastDisplay'
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route>
@@ -23,7 +22,7 @@ const routes = createBrowserRouter(
             <Route path='feeds' element={<Feed />} />
             <Route path='new' element={<PodcastCreator />} />
             <Route path='profile' element={<Profile />} />
-            <Route path='podcast' element={<PodcastViewPage />} />
+            <Route path='podcast' element={<PodcastDisplay />} />
             <Route path='edit' element={<PodcastEditPage />} />
         </Route>
     )

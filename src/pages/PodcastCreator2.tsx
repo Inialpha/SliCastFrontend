@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,40 +11,61 @@ import { Plus, Trash2, ArrowDown, ArrowUp } from 'lucide-react'
 import PodcastDisplay, { Message } from '@/components/podcast-display'
 
 
-import React, { useRef } from 'react'
 import Preview from '../components/podcast/Preview';
-import Feedback from '../components/feedback';
+//import Feedback from '../components/feedback';
 import {FeedbackType } from '../utils/types'
 import GenreSelector, { Genre } from '../components/podcast/Genre';
 import MyEditor from "../components/Editor"
 import { postRequest, postFormData } from '../utils/apis';
 import { useSelector } from 'react-redux';
-
+import Feedback, { FeedbackState }from '../components/Alert';
 
 interface Segment {
   type: string;
   position: number;
   alt?: string | null;
-  content: File | string | null;
   text?: string;
-  image?: File;
+  image?: string;
+  imageFile?: File;
+  
   backgroundColor?: string;
 }
+
+type Podcast = {
+  authors: string[];
+  status: string;
+  title: string;
+  text: string;
+  coverPhoto?: string;
+  coverPhotoFile?: File;
+  duration: number;
+  description: string;
+  genres: string[];
+  segments: Segment;
+};
 
 interface Genre {
   id: string;
   name: string;
 }
+
+interface CurrentImage {
+  file: File;
+  data: string;
+}
+
 export default function PodcastCreator() {
+  const [podcast, setPocast] = useState<Podcast | {}>({});
   const [title, setTitle] = useState('');
   const [story, setStory] = useState('');
   const [description, setDescription] = useState('');
   const [sentencesPerSegment, setSentencesPerSegment] = useState(2)
   const [segments, setSegments] = useState<Slide[]>([])
-  const [editingSegment, setEditingSegment] = useState<Slide | null>(null)
+  const [editingSegment, setEditingSegment] = useState<Segment | null>(null)
   //const [previewSlide, setPreviewSlide] = useState<Slide | null>(null)
   const [selectedGenres, setSelectedGenres] = useState<string[]>([])
   const [feedback, setFeedback] = useState<FeedbackType | null>(null);
+  const [currentImage, setCurrentImage] = useState<CurrentImage | {}>({});
 
   /****************************/
   const [messages, setMessages] = useState<Message[]>([])
@@ -68,32 +89,44 @@ export default function PodcastCreator() {
         backgroundColor: '#ffffff',
         type: "text",
       }
-      newSegment.content = newSegment.text
-      console.log(newSegment)
       newSegments.push(newSegment)
     }
     setSegments(newSegments)
+    setPodcast((prevPodcast) => {
+      return {...prevPodcast, segments: newSegments}
+    });
   }
-  const createPodcast = async (type: string, segments: Segment[]) => {
-    const podcast = {
-
+  const createPodcast = async (type: string) => {
+    if (!segments.length) {
+      setFeedback({message: "Please add segments"})
+      setTimeout(() => {
+        setFeedback(null)
+      }, 5000)
+      return;
+    }
+    const podcastData = {
       authors: [user.id],
       status: type,
       title: title,
       text: story,
+      cover_photo: podcast.coverPhoto,
       duration: sentencesPerSegment,
       description: description,
       genres: selectedGenres.map((g: Genre) => g.id),
-      segments: segments.map((s: Segment) => ({
+      segments: segments.map((s: Segment, index: number) => ({
         ...s,
-        ...(s.type === 'image' && {image: s.image_file}),
+        ...(s.type === 'image' && {image_file: s.imageFile, image: undefined}),
+        position: index + 1,
+
+
         background_color: s.backgroundColor
       }))
     }
+    console.log(podcastData)
 
     const formData = new FormData()
-    Object.entries(podcast).forEach(([key, value]) => { 
-      if (key !== "slides") {
+    Object.entries(podcastData).forEach(([key, value]) => { 
+      if (key !== "segments") {
         if (Array.isArray(value)) {
           value.forEach((item: any) => {
             formData.append(key, item)
@@ -103,7 +136,7 @@ export default function PodcastCreator() {
         }
       }
     });
-    segments.forEach((item: any, idx: number) => {
+    podcastData.segments.forEach((item: any, idx: number) => {
       Object.entries(item).forEach(([key, value]) => {
         formData.append(`segments[${idx}]${key}`, value);
       });
@@ -140,18 +173,43 @@ export default function PodcastCreator() {
       updateSlide({ ...editingSlide, text: content })
     }
   }
+  
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const readFileData = (file: File): string | ArrayBuffer | null => {
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      return reader.result;
+    };
+
+    reader.onerror = () => {
+      return "";
+    };
+    reader.readAsDataURL(file);
+  };
+
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "cover_photo" | "segment_photo") => {
     const file = e.target.files?.[0]
-    if (file && editingSlide) {
-      editingSlide.image_file = file
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        updateSlide({ ...editingSlide, backgroundImage: reader.result as string })
+    if (!file) return;
+    const reader = new FileReader()
+
+    reader.onloadend = () => {
+      const result = reader.result as string;
+
+      if (type === "cover_photo") {
+        podcast.coverPhotoFile = file;
+        podcast.coverPhoto = result;
+      } else if (type === "segment_photo") {
+        setCurrentImage({file: file, data: result})
+        setCurrentContent(file)
       }
-      reader.readAsDataURL(file)
-    }
-  }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+
 
   const handleAudioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -176,34 +234,18 @@ export default function PodcastCreator() {
     setSlides(slides.map(s => s.position === updatedSlide.position ? updatedSlide : s))
   }
 
-  const handlePreview = (slide: Slide) => {
-    setPreviewSlide(slide)
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current.currentTime = 0
-    }
-  }
-
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return
-    }
-
-    const items = Array.from(slides)
-    const [reorderedItem] = items.splice(result.source.index, 1)
-    items.splice(result.destination.index, 0, reorderedItem)
-
-    const updatedSlides = items.map((item, index) => ({
-      ...item,
-      position: index
-    }))
-
-    setSlides(updatedSlides)
-  }
 
   const addSegment = () => {
-    if (currentConent.trim() !== '') {
-      const newSegment: Segment = { type: currentContentType, content: currentContent.trim() }
+    let newSegment: Segment;
+    let position = insertPosition === "start" ? 0 : insertPosition === "start" ? segments.length - 0 : insertPosition;
+
+    if (currentContentType === "text" && currentContent.trim() !== '')  {
+      newSegment = { type: currentContentType, text: currentContent, position: position};
+    } else if (currentContentType === "image") {
+      newSegment = { type: currentContentType, imageFile: currentImage.file, image: currentImage.data, position: position, text: "Image"};
+    }
+      
+    if (newSegment) {
       setSegments(prevSegments => {
         if (insertPosition === 'start') {
           return [newSegment, ...prevSegments]
@@ -222,24 +264,32 @@ export default function PodcastCreator() {
     }
   }
 
-  const removeMessage = (index: number) => {
-    setMessages(messages.filter((_, i) => i !== index))
+  const removeSegments = (index: number) => {
+    setSegments(segments.filter((_, i) => i !== index))
   }
 
-  const moveMessage = (index: number, direction: 'up' | 'down') => {
-    if ((direction === 'up' && index > 0) || (direction === 'down' && index < messages.length - 1)) {
-      const newMessages = [...messages]
-      const temp = newMessages[index]
-      newMessages[index] = newMessages[index + (direction === 'up' ? -1 : 1)]
-      newMessages[index + (direction === 'up' ? -1 : 1)] = temp
-      setMessages(newMessages)
+  const moveSegments = (index: number, direction: 'up' | 'down') => {
+    if ((direction === 'up' && index > 0) || (direction === 'down' && index < segments.length - 1)) {
+      const newSegments = [...segments]
+      const temp = newSegments[index]
+      newSegments[index] = newSegments[index + (direction === 'up' ? -1 : 1)]
+      newSegments[index + (direction === 'up' ? -1 : 1)] = temp
+      setSegments(newSegments)
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      {feedback && <Feedback
+        message={feedback.message}
+        {...(feedback.variant && { variant: feedback.variant })}
+      />}
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center">Create Your Podcast</h1>
+        <div className="flex space-x-4 justify-center">
+          <Button onClick={() => createPodcast("draft")}>Save as Draft</Button>
+          <Button onClick={() => createPodcast("published")}>Publish</Button>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div>
@@ -260,6 +310,16 @@ export default function PodcastCreator() {
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
+      <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                
+                className="hidden"
+              />
+              <Button onClick={() => fileInputRef.current?.click()}>
+                {podcast?.coverPhoto ? 'Change CoverPhoto' : 'Add CoverPhoto'}
+              </Button>
       <GenreSelector selectedGenres={selectedGenres} setSelectedGenres={setSelectedGenres} />
       <div className="bg-gray-200 p-6 rounded-lg">
         <p className="pb-2">Enter the text content of your podcast here and segment it by sentences.</p>
@@ -315,12 +375,25 @@ export default function PodcastCreator() {
                   placeholder="Enter your message"
                 />
               ) : (
+                <div>
                 <Input
                   id="message-content"
                   value={currentContent}
                   onChange={(e) => setCurrentContent(e.target.value)}
                   placeholder="Enter image URL"
                 />
+                <p>OR</p>
+                <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, "segment_photo")}
+                ref={fileInputRef}
+                className="hidden"
+              />
+              <Button onClick={() => fileInputRef.current?.click()}>
+                Upload Image
+              </Button>
+              </div>
               )}
             </div>
             <div>
@@ -354,13 +427,13 @@ export default function PodcastCreator() {
                     {index + 1}. {message.type === 'text' ? message.content : 'Image'}
                   </span>
                   <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="sm" onClick={() => moveMessage(index, 'up')} disabled={index === 0}>
+                    <Button variant="ghost" size="sm" onClick={() => moveSegments(index, 'up')} disabled={index === 0}>
                       <ArrowUp className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => moveMessage(index, 'down')} disabled={index === messages.length - 1}>
+                    <Button variant="ghost" size="sm" onClick={() => moveSegments(index, 'down')} disabled={index === segments.length - 1}>
                       <ArrowDown className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => removeMessage(index)}>
+                    <Button variant="ghost" size="sm" onClick={() => removeSegments(index)}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -369,7 +442,7 @@ export default function PodcastCreator() {
             </div>
           </div>
           <div>
-            <h2 className="text-2xl font-bold mb-4">Preview</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Preview</h2>
             <PodcastDisplay title={title || 'Untitled Podcast'} messages={segments} hideShowNextButton={true} />
           </div>
         </div>

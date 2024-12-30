@@ -21,6 +21,7 @@ export default function PodcastCard({ podcast, fromDashboard = false }: {podcast
 
   const navigate = useNavigate();
   const openPodcast = (podcast) => {
+    console.log("card", podcast);
     navigate('/podcast', {state: { podcast }    })
   }
   const editPodcast = (podcast) => {
@@ -43,7 +44,6 @@ export default function PodcastCard({ podcast, fromDashboard = false }: {podcast
             src={podcast.coverImage}
             alt={`Cover image for ${title}`}
             layout="fill"
-            //objectFit="cover"
             className="transition-transform duration-300 ease-in-out hover:scale-105"
           />
         ) : (

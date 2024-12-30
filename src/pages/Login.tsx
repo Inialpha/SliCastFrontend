@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { Feedback } from '../components/Alert';
+//import { Feedback } from '../components/Alert';
+import Feedback, { FeedbackState }from '../components/Alert';
 import { postRequest, getUser } from '../utils/apis'
 import {FeedbackType } from '../utils/types'
 import { clsx, ClassValue } from "clsx";

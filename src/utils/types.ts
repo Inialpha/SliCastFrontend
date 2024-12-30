@@ -19,3 +19,19 @@ export type FeedbackType = {
   title?: string;
 };
 
+interface Segment {                    type: string;                        position: number;                    alt?: string | null;
+  text?: string;                       image?: string;                      imageFile?: File;                                                         backgroundColor?: string;
+}
+
+type Podcast = {
+  authors: string[];
+  status: string;
+  title: string;
+  text: string;
+  coverPhoto?: string;
+  coverPhotoFile?: File;
+  duration: number;
+  description: string;
+  genres: string[];
+  segments: Segment;
+};

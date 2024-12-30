@@ -6,13 +6,20 @@ import {
   AlertTitle,
 } from "@/components/ui/alert"
 
-export function Feedback({variant = '', title, message}: {variant?: string, title?: string, message: string}) {
+type Variant = 'success' | 'error' | 'warning';
+
+export type FeedbackState = {
+  message: string;
+  variant?: Variant;
+};
+
+export default function Feedback({variant = 'success', title, message}: {variant?: Variant, title?: string, message: string}) {
   const classes = {
     success: "w-full text-center bg-green-200",
     error: "w-full text-center bg-red-200",
     warning: "w-full text-center bg-yellow-200",
   }
-  const className = variant.length > 0 ? classes[variant] : classes["success"]
+  const className = classes[variant]
   const [isVisible, setIsVisible] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => {

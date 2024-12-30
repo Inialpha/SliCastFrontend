@@ -49,37 +49,25 @@ export default function PodcastDisplay({ title, messages }: PodcastProps) {
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
       <div 
         ref={contentRef}
-        className="space-y- flex-grow overflow-y-auto"
+        className="space-y-4 flex-grow overflow-y-auto"
       >
         {messages.slice(0, visibleMessages).map((message, index) => (
-          <div
-            key={index}
-            className="space-y-4 relative pl-6 flex-grow overflow-y-auto"
+          <div 
+            key={index} 
+            className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}
           >
-            <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300"></div>
-            <div className="flex space-y-">
-              <div
-                className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center"
-                aria-hidden="true"
-              >
-                <div className="w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center text-xs font-semibold">
-                  {index + 1}
-                </div>
-                <div className="w-8 h-px bg-gray-300"></div>
-              </div>
-              <div className={`max-w-[90%] p-3 mt-2 rounded-lg ml-8 ${index % 2 === 0 ? 'bg-blue-100' : 'bg-green-100'} text-gray-600 relative`}>
-                {message.type === 'text' ? (
-                  <p className="text-gray-800">{message.text}</p>
-                ) : (
-                  <img
-                    src={message.image}
-                    alt={`Podcast visual ${index + 1}`}
-                    width={300}
-                    height={200}
-                    className="rounded-lg"
-                  />
-                )}
-              </div>
+            <div className={`max-w-[70%] p-3 rounded-lg ${index % 2 === 0 ? 'bg-blue-100' : 'bg-green-100'}`}>
+              {message.type === 'text' ? (
+                <p className="text-gray-800">{message.text}</p>
+              ) : (
+                <img 
+                  src={message.image} 
+                  alt="Podcast visual" 
+                  width={300} 
+                  height={200} 
+                  className="rounded-lg"
+                />
+              )}
             </div>
           </div>
         ))}
@@ -95,5 +83,4 @@ export default function PodcastDisplay({ title, messages }: PodcastProps) {
     </div>
   )
 }
-
 
