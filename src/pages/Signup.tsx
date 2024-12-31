@@ -32,7 +32,7 @@ export default function Signup() {
 
 
     const url = `${import.meta.env.VITE_AUTH_URL}/signup`
-    const response = await postRequest(url, newData);
+    const response = await postRequest(url, newData, false);
     console.log(response)
     if (response.ok) {
       setFeedback('Signup successful login to continue');
@@ -40,6 +40,8 @@ export default function Signup() {
         navigate('/login')
       }, 5000);
     } else {
+      const res = await response.json()
+      console.log(res)
       setFeedback('Signup failed please try again later')
    }
   }

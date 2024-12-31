@@ -15,7 +15,7 @@ import { getRequest } from '../../../utils/apis';
 
 import toCamelCaseKeys from '../../../utils/toCamelCase';
 
-export default function ContentComponent() {
+export default function AllPodcastComponent() {
 
   const user = useSelector((state) => state.user);                                        console.log(user)
 
@@ -27,7 +27,7 @@ export default function ContentComponent() {
 
   useEffect(() => {
     const fetchPodcast = async () => {
-      const url = `${import.meta.env.VITE_API_URL}/users/${user.id}/podcasts/`;
+      const url = `${import.meta.env.VITE_API_URL}/podcasts/`;
       try {
         const res = await getRequest(url);
         if (res.ok) {
@@ -56,7 +56,7 @@ console.log(camelCasePodcasts)
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+      <h1 className="text-3xl font-bold mb-6">All Podcast</h1>
       <Tabs defaultValue="published" className="w-full">
         <TabsList className="grid w-full grid-cols-4 
 ">

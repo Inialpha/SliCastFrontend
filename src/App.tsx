@@ -6,12 +6,14 @@ import Login  from './pages/Login';
 //import SlidablePage from './pages/podcast';
 import Feed from './pages/Feed';
 import Dashboard from './pages/Dashboard.tsx';
+import AdminDashboard from './pages/admin/Dashboard.tsx';
 import PodcastCreator from './pages/PodcastCreator2';
 import EnhancedStorySlideCreator from './pages/PodcastCreator';
 import Profile from './components/dashboard/Profile';
 import PodcastViewPage from './pages/PodcastViewPage';
 import PodcastEditPage from './pages/PodcastUpdatePage';
 import PodcastDisplay from '@/pages/PodcastDisplay'
+import { AdminMiddleware } from '@/utils/middleware';
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <Route>
@@ -24,6 +26,9 @@ const routes = createBrowserRouter(
             <Route path='profile' element={<Profile />} />
             <Route path='podcast' element={<PodcastDisplay />} />
             <Route path='edit' element={<PodcastEditPage />} />
+            <Route path="admin" element={<AdminMiddleware />} >
+              <Route path="dashboard" element={<AdminDashboard />} />
+            </Route>
         </Route>
     )
 )

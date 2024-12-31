@@ -42,7 +42,7 @@ export default function Login() {
     const url = `${import.meta.env.VITE_AUTH_URL}/login/`
 
     try {
-      const response = await postRequest(url, data);
+      const response = await postRequest(url, data, false);
       console.log(response);
       if (response.ok) {
         const res = await response.json();
@@ -64,7 +64,7 @@ export default function Login() {
           dispatch(login(userData));
         }
         setTimeout(() => {
-          navigate("/dashboard")
+          navigate(user.is_admin ? "/admin/dashboard" : "/dashboard")
         }, 500);
         clearInterval(progressInterval);
         setProgress(0);
@@ -72,6 +72,7 @@ export default function Login() {
         clearInterval(progressInterval);
         setProgress(0);
         const res = await response.json();
+        console.log(res)
         if (res.detail === "User account not verified.") {
           console.log(response);
           setFeedback({variant: 'warning', message: "Please verify your email and try again"});
@@ -84,6 +85,10 @@ export default function Login() {
         clearInterval(progressInterval);
         setFeedback({variant: 'error', message: "An error occured please try again"});
         console.log(error);
+    } finally {
+      setTimeout(() => {
+        setFeedback(null)
+      }, 5000);
     }
   }
   return (

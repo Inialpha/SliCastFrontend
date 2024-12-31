@@ -1,14 +1,28 @@
 import { getCookie } from './cookieManager'
 
-export const postRequest = async (url: string, data: object) => {
+export const postRequest = async (url: string, data: object, auth: boolean = true) => {
     const cookie = getCookie('token')
     const headers = new Headers({
         'Content-Type': 'application/json',
-	'Authorization': `Token ${cookie || ''}`,
+	...(auth === true && {'Authorization': `Token ${cookie || ''}`}),
     });
     const response = await fetch(url, {
 	body: JSON.stringify(data),
 	method: 'POST',
+	headers
+    });
+    return response;
+}
+
+export const putRequest = async (url: string, data: object) => {
+    const cookie = getCookie('token')
+    const headers = new Headers({
+        'Content-Type': 'application/json',
+	'Authorization': `Token ${cookie || ''}`,
+    })
+    const response = await fetch(url, {
+        body: JSON.stringify(data),
+        method: 'PATCH',
 	headers
     });
     return response;
@@ -73,6 +87,19 @@ export const getAuthors = async (podcastId: string[]) => {
     const response = await fetch(url, {
 	method: 'GET',
 	headers
+    });
+    return response;
+}
+
+
+export const deleteRequest = async (url: string) => {
+    const cookie = getCookie('token')
+    const headers = new Headers({
+        'Authorization': `Token ${cookie || ''}`,
+    })
+    const response = await fetch(url, {
+        method: 'DELETE',
+        headers
     });
     return response;
 }

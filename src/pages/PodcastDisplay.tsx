@@ -63,7 +63,7 @@ console.log(podcast)
                 </div>
                 <div className="w-8 h-px bg-gray-300"></div>
               </div>
-              <div className={`max-w-[90%] p-3 mt-2 rounded-lg ml-8 ${index % 2 === 0 ? 'bg-blue-100' : 'bg-green-100'} text-gray-600 relative`}>
+              <div className={`max-w-[100%] p-3 mt-2 rounded-lg ml-8 ${index % 2 === 0 ? 'bg-blue-100' : 'bg-green-100'} text-gray-600 relative`}>
                 {message.type === 'text' ? (
                   <p className="text-gray-800">{message.text}</p>
                 ) : (
@@ -88,8 +88,8 @@ console.log(podcast)
           <ChevronDown className="mr-2 h-4 w-4" /> Show Next
         </Button>
       )}
-    </>
-    )}
+      </>
+     )}
     </div>
   )
 }
